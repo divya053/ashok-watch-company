@@ -1,0 +1,17 @@
+# Ashok Watch Company - Environment Variables
+# Rename this file to .env and fill in your values
+
+# Flask Configuration
+DEBUG=False
+SECRET_KEY=your-super-secret-key-change-this
+
+# Razorpay Payment Gateway
+# Get your keys from: https://dashboard.razorpay.com/app/keys
+# For testing, use Test Mode keys (start with rzp_test_)
+# For production, use Live Mode keys (start with rzp_live_)
+RAZORPAY_KEY_ID=rzp_test_your_key_id
+RAZORPAY_KEY_SECRET=your_key_secret
+
+# Server Port (optional, default is 5000)
+PORT=5000
+

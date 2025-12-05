@@ -1,0 +1,20 @@
+# Render.com deployment configuration
+# Deploy at: https://render.com
+
+services:
+  - type: web
+    name: ashok-watch-company
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: RAZORPAY_KEY_ID
+        sync: false  # Set this in Render dashboard
+      - key: RAZORPAY_KEY_SECRET
+        sync: false  # Set this in Render dashboard
+      - key: SECRET_KEY
+        generateValue: true
+

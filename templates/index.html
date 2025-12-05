@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ashok Watch Company - Online Store</title>
+    <!-- Load Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <!-- Razorpay Checkout Script -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        /* Custom styles to enhance the look */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9f9f9; /* Off-white */
+        }
+        .product-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background-color: white;
+            border: 1px solid #f0f0f0;
+            overflow: hidden; /* Ensure rounded corners clip content */
+        }
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+        }
+        /* Custom modal overlay */
+        .modal-overlay {
+            z-index: 1000;
+            background-color: rgba(0, 0, 0, 0.8); /* Darker overlay for dramatic effect */
+            transition: opacity 0.3s ease;
+        }
+        .modal-content {
+            max-width: 95%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: scale-in 0.3s ease-out;
+        }
+        @keyframes scale-in {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .hero-button {
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .hero-button:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(234, 179, 8, 0.4); /* Gold shadow */
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Header / Navigation Bar -->
+    <header class="bg-gray-900 shadow-xl sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto p-4 flex justify-between items-center">
+            <h1 class="text-3xl font-extrabold text-amber-500 tracking-wider">Ashok Watch Co.</h1>
+            <button onclick="document.getElementById('cart-modal').classList.remove('hidden')" class="bg-amber-500 text-gray-900 font-bold py-2 px-5 rounded-full shadow-lg hover:bg-amber-400 transition duration-150 transform hover:scale-105">
+                <span id="cart-count">0</span> Items | Cart
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section (New Creative Addition) -->
+    <section id="hero" class="bg-gray-800 text-white py-16 md:py-24 shadow-2xl">
+        <div class="max-w-7xl mx-auto px-4 md:px-8 flex flex-col lg:flex-row items-center justify-between">
+            <div class="lg:w-1/2 text-center lg:text-left mb-10 lg:mb-0">
+                <p class="text-xl text-amber-500 font-semibold uppercase tracking-widest mb-3">Timeless Luxury</p>
+                <h2 class="text-5xl md:text-6xl font-black mb-6 leading-tight">
+                    Crafting <span class="text-amber-500">Moments</span> of Excellence
+                </h2>
+                <p class="text-gray-300 text-lg mb-8 max-w-lg mx-auto lg:mx-0">
+                    Discover our hand-picked collection of premium watches, exquisite bags, and divine artwork, all curated with unparalleled quality.
+                </p>
+                <a href="#product-grid-section" class="inline-block bg-amber-500 text-gray-900 hero-button font-bold py-3 px-8 rounded-full text-lg shadow-lg">
+                    Shop The Collection
+                </a>
+            </div>
+            <!-- Image Placeholder for visual appeal -->
+            <div class="lg:w-1/2 flex justify-center">
+                <!-- Using one of the uploaded images as a compelling visual -->
+                <img src="/static/WhatsApp Image 2025-12-05 at 23.41.12.jpeg" 
+                     onerror="this.onerror=null; this.src='https://placehold.co/400x400/374151/fcd34d?text=Luxury+Watch';" 
+                     alt="Luxury Watch Collection" 
+                     class="w-full max-w-sm rounded-2xl object-cover shadow-2xl border-4 border-amber-500/50 transform hover:rotate-1 transition duration-500">
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto p-4 md:p-8">
+        <h2 id="product-grid-section" class="text-4xl font-extrabold text-gray-900 mb-10 mt-6 text-center border-b-2 border-amber-500/50 pb-2">Featured Items</h2>
+
+        <!-- Product Grid -->
+        <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <!-- Products will be injected here by JavaScript -->
+        </div>
+    </main>
+
+    <!-- Cart Modal -->
+    <div id="cart-modal" class="modal-overlay fixed inset-0 hidden flex items-center justify-center p-4">
+        <div class="modal-content bg-white w-full lg:w-3/5 rounded-xl shadow-2xl p-6">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 class="text-2xl font-bold text-gray-900">Your Shopping Cart</h3>
+                <button onclick="document.getElementById('cart-modal').classList.add('hidden')" class="text-gray-500 hover:text-gray-700 text-3xl font-light leading-none">&times;</button>
+            </div>
+            
+            <div id="cart-items-container" class="max-h-96 overflow-y-auto mb-4 border-b pb-4">
+                <p id="empty-cart-message" class="text-gray-500 text-center py-8">Your cart is empty.</p>
+                <!-- Cart items list will be here -->
+            </div>
+
+            <div class="flex justify-between items-center text-xl font-bold mb-6">
+                <span>Total:</span>
+                <span id="cart-total" class="text-amber-600">₹0.00</span>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-4">
+                <button onclick="checkout(this)" class="flex-1 bg-amber-500 text-gray-900 py-3 rounded-lg font-bold text-lg hover:bg-amber-600 transition duration-150 shadow-lg">
+                    Proceed to Checkout
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal (Order Form and Payment Instructions) -->
+    <div id="checkout-modal" class="modal-overlay fixed inset-0 hidden flex items-center justify-center p-4">
+        <div class="modal-content bg-white w-full lg:w-1/2 rounded-xl shadow-2xl p-6">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 class="text-2xl font-bold text-gray-900">Complete Your Order</h3>
+                <button onclick="document.getElementById('checkout-modal').classList.add('hidden')" class="text-gray-500 hover:text-gray-700 text-3xl font-light leading-none">&times;</button>
+            </div>
+            
+            <form id="order-form" class="space-y-4" action="https://formsubmit.co/ASHOKLALWANI.ASHU@GMAIL.COM" method="POST">
+                <!-- Orders will be sent to ASHOKLALWANI.ASHU@GMAIL.COM -->
+                <p class="text-sm text-green-600 font-medium">
+                    <strong class="text-green-800">✓</strong> Orders will be sent to your registered email.
+                </p>
+
+                <input type="hidden" name="_subject" value="New Order Received - Ashok Watch Co.">
+                <input type="hidden" name="_template" value="table">
+                <input type="hidden" name="_next" value="https://yourwebsite.com/thankyou.html"> <!-- Optional: Redirect URL after success -->
+                <input type="hidden" name="Order Details" id="form-order-details">
+                <input type="hidden" name="Total Amount" id="form-total-amount">
+                
+                <div>
+                    <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                    <input type="text" id="name" name="Name" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 p-2 border">
+                </div>
+                <div>
+                    <label for="phone" class="block text-sm font-medium text-gray-700">Phone Number (for COD / Delivery)</label>
+                    <input type="tel" id="phone" name="Phone Number" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 p-2 border">
+                </div>
+                <div>
+                    <label for="address" class="block text-sm font-medium text-gray-700">Full Delivery Address</label>
+                    <textarea id="address" name="Delivery Address" rows="3" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 p-2 border"></textarea>
+                </div>
+                
+                <h4 class="text-xl font-bold mt-6 text-gray-900">Payment Options</h4>
+
+                <!-- Razorpay Online Payment - Recommended -->
+                <div class="bg-green-50 p-4 rounded-lg border-2 border-green-400">
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="Payment Method" value="Razorpay" required class="form-radio h-4 w-4 text-green-600" onchange="togglePaymentSection('Razorpay')" checked>
+                        <span class="ml-2 text-gray-700 font-semibold">💳 Pay Online (Cards/UPI/NetBanking) - Recommended</span>
+                    </label>
+                    <p class="text-sm text-gray-500 ml-6 mt-1">Secure payment via Razorpay. All cards, UPI, and Net Banking accepted.</p>
+                    <div class="ml-6 mt-2 flex flex-wrap gap-2">
+                        <span class="bg-white px-2 py-1 rounded text-xs border">💳 Credit/Debit Card</span>
+                        <span class="bg-white px-2 py-1 rounded text-xs border">📱 UPI</span>
+                        <span class="bg-white px-2 py-1 rounded text-xs border">🏦 Net Banking</span>
+                        <span class="bg-white px-2 py-1 rounded text-xs border">📲 Paytm</span>
+                    </div>
+                </div>
+
+                <!-- Cash on Delivery -->
+                <div class="bg-gray-50 p-4 rounded-lg border-2 border-gray-200">
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="Payment Method" value="COD" required class="form-radio h-4 w-4 text-amber-600" onchange="togglePaymentSection('COD')">
+                        <span class="ml-2 text-gray-700 font-semibold">🚚 Cash on Delivery (COD)</span>
+                    </label>
+                    <p class="text-sm text-gray-500 ml-6 mt-1">Pay when you receive the product. Extra ₹50 handling charges may apply.</p>
+                </div>
+
+                <!-- Manual UPI Payment -->
+                <div class="bg-amber-50 p-4 rounded-lg border-2 border-amber-300">
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="Payment Method" value="Manual UPI" required class="form-radio h-4 w-4 text-amber-600" onchange="togglePaymentSection('Manual-UPI')">
+                        <span class="ml-2 text-gray-700 font-semibold">📲 Manual UPI Transfer</span>
+                    </label>
+                    <div id="manual-upi-section" class="mt-4 p-3 bg-white rounded-lg shadow-inner border border-gray-200 hidden">
+                        <p class="font-bold text-center mb-3 text-red-600">Total Payment Due: <span id="payment-due" class="text-2xl">₹0.00</span></p>
+                        <p class="text-sm mb-3">Pay to our UPI ID and enter the transaction reference below:</p>
+
+                        <p class="text-center font-medium text-gray-700 mb-2">Pay to UPI ID:</p>
+                        <p class="text-center text-lg font-mono bg-gray-100 p-2 rounded-md shadow-inner select-all">
+                            ASHOKLALWANI@upi
+                        </p>
+
+                        <div class="mt-4">
+                            <label for="txn_id" class="block text-sm font-medium text-gray-700">Transaction ID / UPI Reference No. *</label>
+                            <input type="text" id="txn_id" name="Transaction ID" placeholder="E.g., 501234567890" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-amber-500 focus:ring-amber-500 p-2 border">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Summary in Checkout -->
+                <div class="bg-gray-100 p-4 rounded-lg mt-4">
+                    <h5 class="font-bold text-gray-800 mb-2">Order Summary</h5>
+                    <div class="flex justify-between text-lg">
+                        <span>Total Amount:</span>
+                        <span id="checkout-total" class="font-bold text-amber-600">₹0.00</span>
+                    </div>
+                </div>
+
+                <button type="button" onclick="processPayment()" class="w-full bg-green-600 text-white py-3 rounded-lg font-bold text-lg hover:bg-green-700 transition duration-150 shadow-xl flex items-center justify-center gap-2">
+                    <span>🔒</span> Pay Securely & Place Order
+                </button>
+                
+                <p class="text-xs text-center text-gray-500 mt-2">
+                    🔒 Your payment information is secure and encrypted
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Message Box/Toast for Add to Cart -->
+    <div id="message-box" class="fixed bottom-5 right-5 bg-gray-900 text-amber-500 p-4 rounded-lg shadow-xl hidden transition-opacity duration-300" role="alert">
+        <p id="message-text" class="font-semibold"></p>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 mt-12 p-6 text-center text-sm text-gray-400">
+        <p class="mb-2 text-amber-500 font-semibold">&copy; 2025 Ashok Watch Company. All rights reserved.</p>
+        <p>Order Enquiries: <a href="mailto:ASHOKLALWANI.ASHU@GMAIL.COM" class="text-amber-500 hover:text-amber-400">ASHOKLALWANI.ASHU@GMAIL.COM</a> | Phone: +91 9828211241</p>
+        <p class="mt-1 text-xs text-gray-500">User ID: <span id="current-user-id">Loading...</span> (Cart is saved to this ID)</p>
+    </footer>
+
+    <!-- Firebase Imports -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // --- GLOBAL FIREBASE/ENV VARIABLES ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        
+        let app, db, auth;
+        let userId = null;
+        let isAuthReady = false;
+
+        // --- DATA SECTION (Local state for rendering) ---
+        const products = [
+            // Products from static folder with prices ranging from ₹200 to ₹700
+            { id: 'P001', name: 'Classic Analog Watch - Silver', price: 249, image: "/static/2.jpeg", description: 'Elegant silver-tone analog watch with premium build quality.' },
+            { id: 'P002', name: 'Sport Digital Watch - Black', price: 299, image: "/static/3.jpeg", description: 'Multi-function digital sports watch with durable strap.' },
+            { id: 'P003', name: 'Vintage Leather Strap Watch', price: 349, image: "/static/4.jpeg", description: 'Timeless vintage-style watch with genuine leather strap.' },
+            { id: 'P004', name: 'Minimalist Gold Tone Watch', price: 399, image: "/static/5.jpeg", description: 'Sleek minimalist design with elegant gold-tone finish.' },
+            { id: 'P005', name: 'Chronograph Steel Watch', price: 449, image: "/static/6.jpeg", description: 'Professional chronograph watch with stainless steel band.' },
+            { id: 'P006', name: 'Luxury Diamond Accent Watch', price: 499, image: "/static/7.jpeg", description: 'Premium watch with sparkling diamond accents on dial.' },
+            { id: 'P007', name: 'Radha Krishna Canvas Print (Large)', price: 549, image: "/static/WhatsApp Image 2025-12-05 at 23.35.48.jpeg", description: 'Beautiful large canvas print of Radha Krishna divine art.' },
+            { id: 'P008', name: 'Divine Blessing Wall Art', price: 299, image: "/static/WhatsApp Image 2025-12-05 at 23.35.52.jpeg", description: 'Spiritual wall art perfect for home decoration.' },
+            { id: 'P009', name: 'Traditional Art Frame - Medium', price: 349, image: "/static/WhatsApp Image 2025-12-05 at 23.35.54.jpeg", description: 'Traditional Indian art in elegant wooden frame.' },
+            { id: 'P010', name: 'Sacred Temple Art Print', price: 399, image: "/static/WhatsApp Image 2025-12-05 at 23.35.55.jpeg", description: 'High-quality temple art print for worship space.' },
+            { id: 'P011', name: 'Krishna Leela Art Collection', price: 449, image: "/static/WhatsApp Image 2025-12-05 at 23.35.57.jpeg", description: 'Exquisite art depicting Krishna Leela scenes.' },
+            { id: 'P012', name: 'Radha Krishna Decorative Plate', price: 599, image: "/static/WhatsApp Image 2025-12-05 at 23.35.58.jpeg", description: 'Beautifully crafted decorative plate with divine imagery.' },
+            { id: 'P013', name: 'Premium Gift Hamper Set', price: 649, image: "/static/WhatsApp Image 2025-12-05 at 23.36.00.jpeg", description: 'Curated gift set perfect for special occasions.' },
+            { id: 'P014', name: 'Mont Blanc Style Duffle Bag', price: 699, image: "/static/WhatsApp Image 2025-12-05 at 23.36.01.jpeg", description: 'Stylish leatherette duffle bag for travel.' },
+            { id: 'P015', name: 'Kids Character Backpack - Minions', price: 349, image: "/static/WhatsApp Image 2025-12-05 at 23.36.02.jpeg", description: 'Fun and durable Minions backpack for kids.' },
+            { id: 'P016', name: 'Professional Laptop Backpack', price: 499, image: "/static/WhatsApp Image 2025-12-05 at 23.36.07.jpeg", description: 'Sleek black backpack with laptop compartment.' },
+            { id: 'P017', name: 'Premium Watch Collection Box', price: 599, image: "/static/WhatsApp Image 2025-12-05 at 23.41.11.jpeg", description: 'Elegant display box for watch collection.' },
+            { id: 'P018', name: 'Captive Gold-Silver Watch Set', price: 699, image: "/static/WhatsApp Image 2025-12-05 at 23.41.12.jpeg", description: 'Premium set of classic two-tone watches.' },
+        ];
+
+        let cart = {}; // The local representation of the cart state, synced with Firestore
+
+        // --- FIREBASE/BACKEND LOGIC ---
+        
+        /**
+         * Gets the reference to the user's cart document in Firestore.
+         * Path: /artifacts/{appId}/users/{userId}/cart/items
+         */
+        function getCartDocRef() {
+            if (!db || !userId) return null;
+            return doc(db, 'artifacts', appId, 'users', userId, 'cart', 'items');
+        }
+
+        /**
+         * Writes the entire local cart state to Firestore.
+         */
+        async function saveCartToFirestore() {
+            const cartRef = getCartDocRef();
+            if (!cartRef) return;
+            try {
+                // Store the cart object under the 'items' field
+                await setDoc(cartRef, { items: cart });
+            } catch (e) {
+                console.error("Error saving cart to Firestore: ", e);
+            }
+        }
+
+        /**
+         * Listens for real-time updates to the cart from Firestore.
+         */
+        function listenToCartChanges() {
+            const cartRef = getCartDocRef();
+            if (!cartRef) {
+                console.error("Cannot start listening: Cart reference is null.");
+                // Fallback: If no Firebase/user, just initialize UI with empty cart
+                updateCartUI();
+                return;
+            }
+            
+            // onSnapshot is mandatory for real-time updates
+            onSnapshot(cartRef, (docSnap) => {
+                if (docSnap.exists() && docSnap.data().items) {
+                    // Update the local cart state with the Firestore data
+                    cart = docSnap.data().items;
+                } else {
+                    // Document doesn't exist or is empty, reset local cart
+                    cart = {};
+                }
+                // Force UI update based on the newly synced 'cart' object
+                updateCartUI();
+            }, (error) => {
+                console.error("Error listening to cart changes:", error);
+            });
+        }
+
+
+        // --- UTILITY FUNCTIONS ---
+
+        /**
+         * Finds a product object by its ID.
+         */
+        window.getProductById = function(id) {
+            return products.find(p => p.id === id);
+        }
+
+        /**
+         * Renders the product grid.
+         */
+        function renderProducts() {
+            const grid = document.getElementById('product-grid');
+            if (!grid) return;
+            grid.innerHTML = products.map(product => `
+                <div class="product-card rounded-xl shadow-lg flex flex-col justify-between">
+                    <img src="${product.image}" onerror="this.onerror=null; this.src='https://placehold.co/400x300/a855f7/ffffff?text=Image+Not+Found';" alt="${product.name}" class="w-full h-48 object-cover rounded-t-xl">
+                    <div class="p-4 flex flex-col flex-grow">
+                        <h3 class="text-xl font-bold mb-2 text-gray-900">${product.name}</h3>
+                        <p class="text-sm text-gray-500 flex-grow mb-4">${product.description}</p>
+                        <div class="flex justify-between items-center mt-auto">
+                            <span class="text-2xl font-extrabold text-amber-600">₹${product.price}</span>
+                            <button onclick="addToCart('${product.id}', '${product.name}')" class="bg-gray-900 text-amber-500 py-2 px-4 rounded-full font-semibold hover:bg-gray-700 transition duration-150 transform hover:scale-105 shadow-md">
+                                Add to Cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        /**
+         * Adds an item to the cart and updates Firestore.
+         */
+        window.addToCart = function(id, name) {
+            if (!isAuthReady) {
+                showToast("Please wait, initializing connection...");
+                return;
+            }
+
+            cart[id] = (cart[id] || 0) + 1;
+            saveCartToFirestore(); // <-- Trigger backend save
+            showToast(`${name} added to cart!`);
+        }
+
+        /**
+         * Removes an item completely or decreases quantity in Firestore.
+         */
+        window.updateCartItemQuantity = function(id, change) {
+            if (!isAuthReady) {
+                showToast("Please wait, initializing connection...");
+                return;
+            }
+
+            if (cart[id]) {
+                cart[id] += change;
+                if (cart[id] <= 0) {
+                    delete cart[id];
+                }
+            }
+            saveCartToFirestore(); // <-- Trigger backend save
+        }
+
+
+        /**
+         * Calculates total, updates cart count, and renders cart contents (UI only).
+         */
+        window.updateCartUI = function() {
+            const container = document.getElementById('cart-items-container');
+            const cartCount = document.getElementById('cart-count');
+            const cartTotalElement = document.getElementById('cart-total');
+            const emptyMessage = document.getElementById('empty-cart-message');
+            
+            // Safety checks for UI elements
+            if (!container || !cartCount || !cartTotalElement || !emptyMessage) {
+                console.error("Critical UI element(s) not found in updateCartUI. Aborting UI update.");
+                return;
+            }
+            
+            let total = 0;
+            let count = 0;
+            let cartItemsHtml = '';
+
+            const productIds = Object.keys(cart);
+            
+            if (productIds.length === 0) {
+                emptyMessage.classList.remove('hidden');
+                container.innerHTML = '';
+            } else {
+                emptyMessage.classList.add('hidden');
+                productIds.forEach(id => {
+                    const product = getProductById(id);
+                    const quantity = cart[id];
+
+                    if (product) {
+                        const itemTotal = product.price * quantity;
+                        total += itemTotal;
+                        count += quantity;
+                        
+                        cartItemsHtml += `
+                            <div class="flex items-center justify-between py-3 border-b last:border-b-0">
+                                <div class="flex items-center space-x-4">
+                                    <img src="${product.image}" onerror="this.onerror=null; this.src='https://placehold.co/50x50/374151/fcd34d?text=X';" class="w-12 h-12 object-cover rounded-md border border-gray-200">
+                                    <div>
+                                        <p class="font-semibold text-gray-900">${product.name}</p>
+                                        <p class="text-sm text-gray-500">₹${product.price} each</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <button onclick="updateCartItemQuantity('${id}', -1)" class="text-gray-900 border border-gray-300 w-6 h-6 rounded-full hover:bg-gray-100 transition duration-150 font-bold flex items-center justify-center">-</button>
+                                    <span class="font-bold">${quantity}</span>
+                                    <button onclick="updateCartItemQuantity('${id}', 1)" class="text-gray-900 border border-gray-300 w-6 h-6 rounded-full hover:bg-gray-100 transition duration-150 font-bold flex items-center justify-center">+</button>
+                                </div>
+                                <span class="font-semibold w-20 text-right text-amber-600">₹${itemTotal.toFixed(2)}</span>
+                            </div>
+                        `;
+                    }
+                });
+                container.innerHTML = cartItemsHtml;
+            }
+            
+            const paymentDueElement = document.getElementById('payment-due');
+            const checkoutTotalElement = document.getElementById('checkout-total');
+            
+            cartCount.textContent = count;
+            cartTotalElement.textContent = `₹${total.toFixed(2)}`;
+            if (paymentDueElement) {
+                paymentDueElement.textContent = `₹${total.toFixed(2)}`;
+            }
+            if (checkoutTotalElement) {
+                checkoutTotalElement.textContent = `₹${total.toFixed(2)}`;
+            }
+            
+            // Prepare data for the form submission
+            const formOrderDetails = document.getElementById('form-order-details');
+            const formTotalAmount = document.getElementById('form-total-amount');
+
+            if (formOrderDetails && formTotalAmount) {
+                const orderDetailsArray = productIds.map(id => {
+                    const product = getProductById(id);
+                    // Ensure product exists before trying to access properties
+                    if (product) {
+                        return `${cart[id]} x ${product.name} (₹${product.price} each)`;
+                    }
+                    return '';
+                }).filter(Boolean); // Filter out empty strings
+
+                formOrderDetails.value = orderDetailsArray.join(' | ');
+                formTotalAmount.value = `₹${total.toFixed(2)}`;
+            }
+        }
+        
+        /**
+         * Shows a temporary toast message.
+         */
+        window.showToast = function(message) {
+            const box = document.getElementById('message-box');
+            const text = document.getElementById('message-text');
+            
+            if (!box || !text) {
+                console.error("Toast elements not found.");
+                return;
+            }
+
+            text.textContent = message;
+            box.classList.remove('hidden', 'opacity-0');
+            box.classList.add('opacity-100');
+
+            setTimeout(() => {
+                box.classList.remove('opacity-100');
+                box.classList.add('opacity-0');
+                setTimeout(() => box.classList.add('hidden'), 300);
+            }, 2500);
+        }
+
+        /**
+         * Handles the checkout process.
+         */
+        window.checkout = function() {
+            if (Object.keys(cart).length === 0) {
+                showToast("Your cart is empty. Add items first!");
+                return;
+            }
+            const cartModal = document.getElementById('cart-modal');
+            const checkoutModal = document.getElementById('checkout-modal');
+            
+            if (cartModal) cartModal.classList.add('hidden');
+            if (checkoutModal) checkoutModal.classList.remove('hidden');
+            
+            // Set initial state for payment method
+            togglePaymentSection('COD');
+        }
+
+        /**
+         * Toggles visibility of payment sections based on selected method.
+         */
+        window.togglePaymentSection = function(method) {
+            const manualUpiSection = document.getElementById('manual-upi-section');
+            const txnInput = document.getElementById('txn_id');
+
+            // Hide all sections first
+            if (manualUpiSection) manualUpiSection.classList.add('hidden');
+            if (txnInput) txnInput.value = '';
+
+            // Show relevant section
+            if (method === 'Manual-UPI' && manualUpiSection) {
+                manualUpiSection.classList.remove('hidden');
+            }
+        }
+
+        /**
+         * Calculate cart total for payment
+         */
+        window.getCartTotal = function() {
+            let total = 0;
+            Object.keys(cart).forEach(id => {
+                const product = getProductById(id);
+                if (product) {
+                    total += product.price * cart[id];
+                }
+            });
+            return total;
+        }
+
+        /**
+         * Get cart items for order
+         */
+        window.getCartItems = function() {
+            return Object.keys(cart).map(id => {
+                const product = getProductById(id);
+                if (product) {
+                    return {
+                        id: id,
+                        name: product.name,
+                        price: product.price,
+                        quantity: cart[id]
+                    };
+                }
+                return null;
+            }).filter(Boolean);
+        }
+
+        /**
+         * Process payment based on selected method
+         */
+        window.processPayment = async function() {
+            // Validate form fields
+            const name = document.getElementById('name').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const address = document.getElementById('address').value.trim();
+
+            if (!name || !phone || !address) {
+                showToast("Please fill in all required fields!");
+                return;
+            }
+
+            if (Object.keys(cart).length === 0) {
+                showToast("Your cart is empty!");
+                return;
+            }
+
+            // Get selected payment method
+            const paymentMethod = document.querySelector('input[name="Payment Method"]:checked').value;
+            const total = getCartTotal();
+
+            if (paymentMethod === 'Razorpay') {
+                // Process Razorpay payment
+                await initiateRazorpayPayment(name, phone, address, total);
+            } else if (paymentMethod === 'Manual UPI') {
+                // Validate transaction ID for manual UPI
+                const txnId = document.getElementById('txn_id').value.trim();
+                if (!txnId) {
+                    showToast("Please enter the UPI Transaction ID!");
+                    return;
+                }
+                await saveOrderToBackend(name, phone, address, 'Manual UPI', txnId);
+            } else {
+                // COD - just save the order
+                await saveOrderToBackend(name, phone, address, 'COD', null);
+            }
+        }
+
+        /**
+         * Initiate Razorpay payment
+         */
+        window.initiateRazorpayPayment = async function(name, phone, address, total) {
+            showToast("Initiating payment...");
+
+            try {
+                // Create order on backend
+                const response = await fetch('/api/create-order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ amount: total * 100 }) // Convert to paise
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || data.error) {
+                    showToast(data.error || "Failed to create order. Please try COD.");
+                    return;
+                }
+
+                // Configure Razorpay options
+                const options = {
+                    key: data.key_id,
+                    amount: data.amount,
+                    currency: data.currency,
+                    name: 'Ashok Watch Company',
+                    description: 'Order Payment',
+                    order_id: data.order_id,
+                    handler: async function(response) {
+                        // Verify payment on backend
+                        const verifyResponse = await fetch('/api/verify-payment', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature
+                            })
+                        });
+
+                        const verifyData = await verifyResponse.json();
+
+                        if (verifyData.success) {
+                            // Save order after successful payment
+                            await saveOrderToBackend(name, phone, address, 'Razorpay', response.razorpay_payment_id);
+                        } else {
+                            showToast("Payment verification failed. Please contact support.");
+                        }
+                    },
+                    prefill: {
+                        name: name,
+                        contact: phone
+                    },
+                    theme: {
+                        color: '#f59e0b' // Amber color
+                    },
+                    modal: {
+                        ondismiss: function() {
+                            showToast("Payment cancelled. You can try again or use COD.");
+                        }
+                    }
+                };
+
+                // Open Razorpay checkout
+                const rzp = new Razorpay(options);
+                rzp.open();
+
+            } catch (error) {
+                console.error("Payment error:", error);
+                showToast("Payment failed. Please try COD option.");
+            }
+        }
+
+        /**
+         * Save order to backend after payment
+         */
+        window.saveOrderToBackend = async function(name, phone, address, paymentMethod, paymentId) {
+            showToast("Saving your order...");
+
+            try {
+                const response = await fetch('/api/save-order', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: name,
+                        phone: phone,
+                        address: address,
+                        items: getCartItems(),
+                        total: getCartTotal(),
+                        payment_method: paymentMethod,
+                        payment_id: paymentId
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Clear cart
+                    cart = {};
+                    saveCartToFirestore();
+                    
+                    // Close checkout modal and show success
+                    document.getElementById('checkout-modal').classList.add('hidden');
+                    showOrderSuccessModal(data.order_id, paymentMethod);
+                } else {
+                    showToast("Failed to save order. Please contact support.");
+                }
+            } catch (error) {
+                console.error("Error saving order:", error);
+                showToast("Error saving order. Please contact us with your payment details.");
+            }
+        }
+
+        /**
+         * Show order success modal
+         */
+        window.showOrderSuccessModal = function(orderId, paymentMethod) {
+            // Create success modal dynamically
+            const successModal = document.createElement('div');
+            successModal.id = 'success-modal';
+            successModal.className = 'modal-overlay fixed inset-0 flex items-center justify-center p-4';
+            successModal.innerHTML = `
+                <div class="modal-content bg-white w-full max-w-md rounded-xl shadow-2xl p-8 text-center">
+                    <div class="text-6xl mb-4">🎉</div>
+                    <h3 class="text-2xl font-bold text-green-600 mb-2">Order Placed Successfully!</h3>
+                    <p class="text-gray-600 mb-4">Thank you for shopping with Ashok Watch Company.</p>
+                    <div class="bg-gray-100 p-4 rounded-lg mb-4">
+                        <p class="text-sm text-gray-500">Order ID</p>
+                        <p class="text-xl font-bold text-gray-900">${orderId}</p>
+                        <p class="text-sm text-gray-500 mt-2">Payment Method</p>
+                        <p class="font-semibold text-amber-600">${paymentMethod}</p>
+                    </div>
+                    <p class="text-sm text-gray-500 mb-4">We'll contact you on your phone number for delivery updates.</p>
+                    <button onclick="document.getElementById('success-modal').remove(); updateCartUI();" class="bg-amber-500 text-gray-900 py-2 px-6 rounded-full font-bold hover:bg-amber-400 transition">
+                        Continue Shopping
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(successModal);
+        }
+
+        // --- INITIALIZATION ---
+        window.onload = async function() {
+            renderProducts();
+
+            // 1. Initialize Firebase
+            if (Object.keys(firebaseConfig).length > 0) {
+                try {
+                    app = initializeApp(firebaseConfig);
+                    db = getFirestore(app);
+                    auth = getAuth(app);
+                    setLogLevel('debug'); // Enable Firestore logging
+
+                    // 2. Authentication and setup
+                    onAuthStateChanged(auth, async (user) => {
+                        if (user) {
+                            userId = user.uid;
+                        } else {
+                            // Fallback to anonymous sign-in if no user
+                            try {
+                                const anonymousUserCredential = await signInAnonymously(auth);
+                                userId = anonymousUserCredential.user.uid;
+                            } catch (error) {
+                                console.error("Anonymous sign-in failed:", error);
+                                userId = crypto.randomUUID(); // Fallback ID
+                            }
+                        }
+                        
+                        isAuthReady = true;
+                        document.getElementById('current-user-id').textContent = userId;
+                        
+                        // 3. Start listening to cart changes ONLY after auth is ready
+                        listenToCartChanges();
+                    });
+
+                    // Handle custom token sign-in immediately if available
+                    if (typeof __initial_auth_token !== 'undefined') {
+                        try {
+                            // This will trigger the onAuthStateChanged listener above
+                            await signInWithCustomToken(auth, __initial_auth_token);
+                        } catch(e) {
+                            console.error("Custom token sign-in failed during initialization:", e);
+                        }
+                    }
+
+                } catch (error) {
+                    console.error("Firebase initialization failed:", error);
+                    // If Firebase fails, set ready flag and update UI once with empty cart
+                    isAuthReady = true;
+                    updateCartUI();
+                }
+
+            } else {
+                console.warn("Firebase config not available. Running in local mode only.");
+                isAuthReady = true;
+                document.getElementById('current-user-id').textContent = 'Local Mode';
+                updateCartUI(); // Fallback to local cart if no Firebase
+            }
+
+
+            // Event listener for form submission - show success message
+            const form = document.getElementById('order-form');
+            if (form) {
+                form.onsubmit = function(event) {
+                    // Validate cart is not empty
+                    if (Object.keys(cart).length === 0) {
+                        event.preventDefault();
+                        showToast("Your cart is empty! Please add items first.");
+                        return false;
+                    }
+                    showToast("Submitting your order...");
+                };
+            }
+        };
+    </script>
+</body>
+</html>
